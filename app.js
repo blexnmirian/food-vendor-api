@@ -33,11 +33,24 @@ app.get('/', (req, res)=>{
   })
 })
 
-//bringing in the passport authentication strategy
-require('./config/passport')(passport);
+//Create a custom middleware function
+const checkUserType = function(req, res, next){
+  const userType = req.originalUrl.split('/')[2];
+  //bringing in the passport authentication strategy
+  require('./config/passport')(userType, passport);
 
-const User = require('./routes/customerRoute')
-app.use('/api', User);
+  next();
+}
+
+app.use(checkUserType)
+
+
+
+const Customers = require('./routes/customerRoute')
+app.use('/api/customers', Customers);
+
+const Vendor = require('./routes/vendorRoute')
+app.use('/api/vendor', Vendor);
 
 // Defining the port 
 const PORT = process.env.PORT || 5000;
